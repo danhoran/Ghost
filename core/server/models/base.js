@@ -9,7 +9,7 @@ var ghostBookshelf,
     sanitize  = require('validator').sanitize;
 
 // Initializes a new Bookshelf instance, for reference elsewhere in Ghost.
-ghostBookshelf = Bookshelf.initialize(config[process.env.NODE_ENV || 'development'].database);
+ghostBookshelf = Bookshelf.ghost = Bookshelf.initialize(config[process.env.NODE_ENV || 'development'].database);
 ghostBookshelf.client = config[process.env.NODE_ENV].database.client;
 
 ghostBookshelf.validator = new Validator();
@@ -84,12 +84,13 @@ ghostBookshelf.Model = ghostBookshelf.Model.extend({
 
     // #### generateSlug
     // Create a string act as the permalink for an object.
-    generateSlug: function (Model, base) {
+    generateSlug: function (Model, base, readOptions) {
         var slug,
             slugTryCount = 1,
             // Look for a post with a matching slug, append an incrementing number if so
             checkIfSlugExists = function (slugToFind) {
-                return Model.read({slug: slugToFind}).then(function (found) {
+                readOptions = _.extend(readOptions || {}, { slug: slugToFind });
+                return Model.read(readOptions).then(function (found) {
                     var trimSpace;
 
                     if (!found) {

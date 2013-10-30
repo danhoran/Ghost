@@ -4,8 +4,15 @@
     "description" : "Just a blogging platform.",
     "author"      : "Ghost Foundation",
     "homepage"    : "http://ghost.org",
-    "keywords"    : ["ghost", "blog", "cms"],
-    "repository"  : {"type": "git", "url": "git://github.com/TryGhost/Ghost.git"},
+    "keywords"    : [
+        "ghost",
+        "blog",
+        "cms"
+    ],
+    "repository"  : {
+        "type": "git",
+        "url": "git://github.com/TryGhost/Ghost.git"
+    },
     "private"     : true,
     "licenses"    : [
         {
@@ -18,22 +25,22 @@
         "test": "grunt validate --verbose"
     },
     "engines": {
-        "node": ">=0.10.* <0.11.4"
+        "node": "0.10.*"
     },
     "engineStrict": true,
     "dependencies": {
         "express": "3.4.2",
-        "express-hbs": "0.3.0",
+        "express-hbs": "0.5.0",
         "connect-slashes": "0.0.10",
         "node-polyglot": "0.2.1",
         "moment": "2.1.0",
         "underscore": "1.5.1",
         "showdown": "0.3.1",
-        "sqlite3": "2.1.16",
+        "sqlite3": "2.1.18",
         "bookshelf": "0.5.7",
         "knex": "0.4.11",
         "when": "2.2.1",
-        "bcrypt-nodejs": "0.0.3",
+        "bcryptjs": "0.7.10",
         "node-uuid": "1.4.0",
         "colors": "0.6.1",
         "semver": "2.1.0",
@@ -52,7 +59,7 @@
         "grunt-shell": "~0.3.1",
         "grunt-contrib-sass": "~0.4.1",
         "grunt-contrib-handlebars": "~0.5.10",
-        "grunt-contrib-watch": "~0.5.1",
+        "grunt-contrib-watch": "~0.5.3",
         "grunt-bump": "~0.0.11",
         "grunt-contrib-clean": "~0.5.0",
         "grunt-contrib-copy": "~0.4.1",

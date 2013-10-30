@@ -6,9 +6,8 @@
 
 
     UploadUi = function ($dropzone, settings) {
-        var source,
-            $url = '<div class="js-url"><input class="url js-upload-url" type="url" placeholder="http://"/></div>',
-            $cancel = '<a class="image-cancel js-cancel"><span class="hidden">Delete</span></a>',
+        var $url = '<div class="js-url"><input class="url js-upload-url" type="url" placeholder="http://"/></div>',
+            $cancel = '<a class="image-cancel js-cancel" title="Delete"><span class="hidden">Delete</span></a>',
             $progress =  $('<div />', {
                 "class" : "js-upload-progress progress progress-success active",
                 "role": "progressbar",
@@ -94,6 +93,13 @@
                     fail: function (e, data) {
                         $dropzone.trigger("uploadfailure", [data.result]);
                         $dropzone.find('.js-upload-progress-bar').addClass('fail');
+                        if (data.jqXHR.status === 413) {
+                            $dropzone.find('div.js-fail').text("The image you uploaded was too big.");
+                        } else if (data.jqXHR.status === 415) {
+                            $dropzone.find('div.js-fail').text("The image type you uploaded is not supported. Please use .PNG, .JPG, .GIF.");
+                        } else {
+                            $dropzone.find('div.js-fail').text("Something went wrong :(");
+                        }
                         $dropzone.find('div.js-fail, button.js-fail').fadeIn(1500);
                         $dropzone.find('button.js-fail').on('click', function () {
                             $dropzone.css({minHeight: 0});
@@ -184,9 +190,8 @@
                 });
             },
             initWithImage: function () {
-                var self = this, val;
+                var self = this;
                 // This is the start point if an image already exists
-                source = $dropzone.find('img.js-upload-target').attr('src');
                 $dropzone.removeClass('image-uploader image-uploader-url').addClass('pre-image-uploader');
                 $dropzone.find('div.description').hide();
                 $dropzone.append($cancel);

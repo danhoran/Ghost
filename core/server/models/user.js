@@ -5,7 +5,7 @@ var User,
     when           = require('when'),
     errors         = require('../errorHandling'),
     nodefn         = require('when/node/function'),
-    bcrypt         = require('bcrypt-nodejs'),
+    bcrypt         = require('bcryptjs'),
     Posts          = require('./post').Posts,
     ghostBookshelf = require('./base'),
     Role           = require('./role').Role,
@@ -38,6 +38,7 @@ User = ghostBookshelf.Model.extend({
         if (this.get('website') && this.get('website').length > 0) {
             ghostBookshelf.validator.check(this.get('website'), "Looks like your website is not actually a website. Try again?").isUrl();
         }
+        ghostBookshelf.validator.check(this.get('location'), 'This seems a little too long! Please try and keep your location under 150 characters.').len(0, 150);
         return true;
     },
 
@@ -91,7 +92,6 @@ User = ghostBookshelf.Model.extend({
         var self = this,
             // Clone the _user so we don't expose the hashed password unnecessarily
             userData = _.extend({}, _user);
-
         /**
          * This only allows one user to be added to the database, otherwise fails.
          * @param  {object} user
@@ -105,8 +105,11 @@ User = ghostBookshelf.Model.extend({
                 return when.reject(new Error('A user is already registered. Only one user for now!'));
             }
         }).then(function () {
+            // Generate a new salt
+            return nodefn.call(bcrypt.genSalt);
+        }).then(function (salt) {
             // Hash the provided password with bcrypt
-            return nodefn.call(bcrypt.hash, _user.password, null, null);
+            return nodefn.call(bcrypt.hash, _user.password, salt);
         }).then(function (hash) {
             // Assign the hashed password
             userData.password = hash;
@@ -185,7 +188,9 @@ User = ghostBookshelf.Model.extend({
             if (!matched) {
                 return when.reject(new Error('Your password is incorrect'));
             }
-            return nodefn.call(bcrypt.hash, newPassword, null, null);
+            return nodefn.call(bcrypt.genSalt);
+        }).then(function (salt) {
+            return nodefn.call(bcrypt.hash, newPassword, salt);
         }).then(function (hash) {
             user.save({password: hash});
 
@@ -199,7 +204,9 @@ User = ghostBookshelf.Model.extend({
 
         return this.forge({email: email}).fetch({require: true}).then(function (_user) {
             user = _user;
-            return nodefn.call(bcrypt.hash, newPassword, null, null);
+            return nodefn.call(bcrypt.genSalt);
+        }).then(function (salt) {
+            return nodefn.call(bcrypt.hash, newPassword, salt);
         }).then(function (hash) {
             user.save({password: hash});
             return { user: user, newPassword: newPassword };

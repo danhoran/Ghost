@@ -31,7 +31,7 @@
         blog: function () {
             var posts = new Ghost.Collections.Posts();
             NProgress.start();
-            posts.fetch({ data: { status: 'all', orderBy: ['updated_at', 'DESC'] } }).then(function () {
+            posts.fetch({ data: { status: 'all', orderBy: ['updated_at', 'DESC'], where: { page: 'all' } } }).then(function () {
                 Ghost.currentView = new Ghost.Views.Blog({ el: '#main', collection: posts });
                 NProgress.done();
             });
@@ -58,7 +58,7 @@
             post.urlRoot = Ghost.settings.apiRoot + '/posts';
             if (id) {
                 post.id = id;
-                post.fetch().then(function () {
+                post.fetch({ data: {status: 'all'}}).then(function () {
                     Ghost.currentView = new Ghost.Views.Editor({ el: '#main', model: post });
                 });
             } else {

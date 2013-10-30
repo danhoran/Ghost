@@ -174,6 +174,10 @@
             Ghost.Validate
                 .check(postsPerPage, {message: "Please use a number less than 1000", el: $('postsPerPage')})
                 .isInt().max(1000);
+            Ghost.Validate
+                .check(postsPerPage, {message: "Please use a number greater than 0", el: $('postsPerPage')})
+                .isInt().min(0);
+
 
             if (Ghost.Validate._errors.length > 0) {
                 Ghost.Validate.handleErrors();
@@ -201,27 +205,28 @@
             this.showUpload('cover', settings.cover);
         },
         showUpload: function (key, src) {
-            var self = this, upload = new Ghost.Models.uploadModal({'key': key, 'src': src, 'id': this.id, 'accept': {
-                func: function () { // The function called on acceptance
-                    var data = {};
-                    if (this.$('.js-upload-url').val()) {
-                        data[key] = this.$('.js-upload-url').val();
-                    } else {
-                        data[key] = this.$('.js-upload-target').attr('src');
-                    }
+            var self = this,
+                upload = new Ghost.Models.uploadModal({'key': key, 'src': src, 'id': this.id, 'accept': {
+                    func: function () { // The function called on acceptance
+                        var data = {};
+                        if (this.$('.js-upload-url').val()) {
+                            data[key] = this.$('.js-upload-url').val();
+                        } else {
+                            data[key] = this.$('.js-upload-target').attr('src');
+                        }
 
-                    self.model.save(data, {
-                        success: self.saveSuccess,
-                        error: self.saveError
-                    }).then(function () {
-                        self.render();
-                    });
+                        self.model.save(data, {
+                            success: self.saveSuccess,
+                            error: self.saveError
+                        }).then(function () {
+                            self.saveSettings();
+                        });
 
-                    return true;
-                },
-                buttonClass: "button-save right",
-                text: "Save" // The accept button text
-            }});
+                        return true;
+                    },
+                    buttonClass: "button-save right",
+                    text: "Save" // The accept button text
+                }});
 
             this.addSubview(new Ghost.Views.Modal({
                 model: upload
@@ -275,7 +280,7 @@
                         success: self.saveSuccess,
                         error: self.saveError
                     }).then(function () {
-                        self.render();
+                        self.saveUser();
                     });
                     return true;
                 },

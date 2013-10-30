@@ -20,7 +20,6 @@ describe('Post Model', function () {
     });
 
     beforeEach(function (done) {
-        this.timeout(5000);
         testUtils.initData()
             .then(function () {
                 return testUtils.insertDefaultFixtures();
@@ -84,7 +83,6 @@ describe('Post Model', function () {
     });
 
     it('can findOne, returning author and user data', function (done) {
-        this.timeout(5000);
         var firstPost;
 
         PostModel.findOne({}).then(function (result) {
@@ -186,8 +184,6 @@ describe('Post Model', function () {
                 markdown: 'Test Content 1'
             };
 
-        this.timeout(5000); // this is a patch to ensure it doesn't timeout.
-
         // Create 12 posts with the same title
         sequence(_.times(12, function (i) {
             return function () {
@@ -266,7 +262,8 @@ describe('Post Model', function () {
                 updatedSecondPost.get('slug').should.not.equal(firstPost.slug);
 
                 return PostModel.read({
-                    id: updatedSecondPost.id
+                    id: updatedSecondPost.id,
+                    status: 'all'
                 });
             }).then(function (foundPost) {
 
@@ -322,8 +319,6 @@ describe('Post Model', function () {
     });
 
     it('can fetch a paginated set, with various options', function (done) {
-        this.timeout(10000); // this is a patch to ensure it doesn't timeout.
-
         testUtils.insertMorePosts().then(function () {
 
             return PostModel.findPage({page: 2});

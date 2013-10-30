@@ -35,6 +35,7 @@
         initialize: function (options) {
             this.$('.content-list-content').scrollClass({target: '.content-list', offset: 10});
             this.listenTo(this.collection, 'remove', this.showNext);
+            this.listenTo(this.collection, 'add', this.renderPost);
             // Can't use backbone event bind (see: http://stackoverflow.com/questions/13480843/backbone-scroll-event-not-firing)
             this.$('.content-list-content').scroll($.proxy(this.checkScroll, this));
         },
@@ -92,6 +93,7 @@
                 data: {
                     status: 'all',
                     page: (self.collection.currentPage + 1),
+                    where: { page: 'all' },
                     orderBy: ['updated_at', 'DESC']
                 }
             }).then(function onSuccess(response) {
@@ -102,9 +104,18 @@
             });
         },
 
+        renderPost: function (model) {
+            this.$('ol').append(this.addSubview(new ContentItem({model: model})).render().el);
+        },
+
         render: function () {
+            var $list = this.$('ol');
+
+            // Clear out any pre-existing subviews.
+            this.removeSubviews();
+
             this.collection.each(function (model) {
-                this.$('ol').append(this.addSubview(new ContentItem({model: model})).render().el);
+                $list.append(this.addSubview(new ContentItem({model: model})).render().el);
             }, this);
             this.showNext();
         }
@@ -125,6 +136,7 @@
 
         initialize: function () {
             this.listenTo(Backbone, 'blog:activeItem', this.checkActive);
+            this.listenTo(this.model, 'change:page', this.render);
             this.listenTo(this.model, 'destroy', this.removeItem);
         },
 
@@ -180,7 +192,9 @@
         activeId: null,
 
         events: {
-            'click .post-controls .post-edit' : 'editPost'
+            'click .post-controls .post-edit' : 'editPost',
+            'click .featured' : 'toggleFeatured',
+            'click .unfeatured' : 'toggleFeatured'
         },
 
         initialize: function (options) {
@@ -199,6 +213,33 @@
             // for now this will disable "open in new tab", but when we have a Router implemented
             // it can go back to being a normal link to '#/ghost/editor/X'
             window.location = '/ghost/editor/' + this.model.get('id') + '/';
+        },
+
+        toggleFeatured: function (e) {
+            var self = this,
+                featured = !self.model.get('featured'),
+                featuredEl = $(e.currentTarget),
+                model = this.collection.get(this.activeId);
+
+            model.save({
+                featured: featured
+            }, {
+                success : function (model, response, options) {
+                    featuredEl.removeClass("featured unfeatured").addClass(featured ? "featured" : "unfeatured");
+                    Ghost.notifications.addItem({
+                        type: 'success',
+                        message: "Post successfully marked as " + (featured ? "featured" : "not featured") + ".",
+                        status: 'passive'
+                    });
+                },
+                error : function (model, xhr) {
+                    Ghost.notifications.addItem({
+                        type: 'error',
+                        message: Ghost.Views.Utils.getRequestErrorMessage(xhr),
+                        status: 'passive'
+                    });
+                }
+            });
         },
 
         templateName: "preview",

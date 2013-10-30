@@ -18,25 +18,28 @@ If you think you've found a problem with Ghost, or you'd like to make a request 
 
 **Pre-requisites:**
 
-* node > 0.10 and < 0.11.4
-* ruby and the gems 'sass' and 'bourbon'
+* node 0.10.x
+* ruby and the gems 'sass' and 'bourbon' - you can use `bundle install` to install the gems
 * for running functional tests: phantomjs 1.9.* and casperjs 1.1.* ([instructions](https://github.com/TryGhost/Ghost/wiki/Functional-testing-with-PhantomJS-and-CasperJS))
 * for building docs: python and pygments
 
 
 ### Installation / Setup Instructions
 
+1. Check you have the pre-requisites listed above!
 1. Clone the git repo
-2. cd into the project folder
-3. Run `git submodule update --init`
-4. Run `npm install -g grunt-cli`
-5. Run `npm install`.
+1. cd into the project folder
+1. Run `git submodule update --init`
+1. Run `npm install -g grunt-cli`
+1. Run `npm install`.
 	* If the install fails with errors to do with "node-gyp rebuild" or "SQLite3", follow the SQLite3 install instructions below this list
     * Usually if you're within vagrant, and have installed the guest plugins and updated that, this will not happen
-6. Run `grunt init` from the root - this installs Bourbon, compiles SASS and compiles Handlebars templates
-7. Run `npm start` from the root to start the server.
+1. Run `grunt init` from the root - this generates the Bourbon directory, compiles SASS and compiles Handlebars templates
+1. Run `npm start` from the root to start the server.
 
-Front-end can be located at [localhost:2368](http://localhost:2368), Admin is at [localhost:2368/ghost/](http://localhost:2368/ghost/)
+If something goes wrong, please see the [troubleshooting tips](https://github.com/TryGhost/Ghost/blob/master/CONTRIBUTING.md#troubleshooting--faq) below.
+
+Front-end can be located at <http://localhost:2368>, Admin is at <http://localhost:2368/ghost/>.
 
 Whist developing you may wish to use **grunt watch** to watch for changes to handlebars and sass and recompile automatically, if you run Ghost in **production** mode, you will need to run **grunt prod** - please see the [Grunt Toolkit docs](https://github.com/TryGhost/Ghost/wiki/Grunt-Toolkit).
 
@@ -74,7 +77,7 @@ Good, clear and consistent code styles are pivotal in the success of any softwar
 * Indent with 4 spaces
 * Max line length 120
 * Use unix line endings
-* Document as you go - we are using groc and jsdoc formats
+* Document as you go - we have groc although are not actively using it yet. Comments should be used to provide clarity.
 * Write tests, unit tests are written in Mocha using spec style, functional tests use Casper.js
 
 For more in depth information please read the official [Ghost Coding Standards](https://github.com/TryGhost/Ghost/wiki/Code-standards).
@@ -108,7 +111,7 @@ Whilst you're working on your branch on your own, you can do all the commits you
 - Run `git log master..your-branch-name` to see how many commits there are on your branch
 - Run `git rebase -i HEAD~#` where # is the number of commits you have done on your branch
 
-Use the interactive rebase to edit your history. Unless you have good reason to keep more than one commit, I recommend marking the first commit with 'r' and the others with 's'. This lets you keep the first commit only, but change the message. You commit message(s) should follow the pattern described in the [notes](https://github.com/TryGhost/Ghost/wiki/Git-workflow#notes-on-writing-good-commit-messages) above. The first line of your commit message will appear in the change log which goes out to our VIPs with each pre-release, so please keep that in mind.
+Use the interactive rebase to edit your history. Unless you have good reason to keep more than one commit, I recommend marking the first commit with 'r' and the others with 's'. This lets you keep the first commit only, but change the message. Your commit message(s) should follow the pattern described in the [notes](https://github.com/TryGhost/Ghost/wiki/Git-workflow#notes-on-writing-good-commit-messages) above. The first line of your commit message will appear in the change log which goes out to our VIPs with each pre-release, so please keep that in mind.
 
 ### Check it passes the tests
 
